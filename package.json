@@ -27,7 +27,6 @@
   "preferGlobal": "true",
   "dependencies": {
     "bytes": "^2.3.0",
-    "chai": "^3.5.0",
     "cli-spinner": "^0.2.5",
     "command-line-args": "^2.1.6",
     "command-line-usage": "^2.0.5",
@@ -36,5 +35,8 @@
     "moment": "^2.13.0",
     "promise-series2": "^1.1.0",
     "ramda": "^0.21.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0"
   }
 }

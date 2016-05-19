@@ -52,7 +52,11 @@ const programArgs = [
 ]
 
 const padRight = (val, l, c) => {
-  return val + Array(l - val.length + 1).join(c || ' ')
+  try {
+    return val + Array(l - val.length + 1).join(c || ' ')
+  } catch (ex) {
+    return val
+  }
 }
 
 const cli = commandLineArgs(programArgs)
@@ -90,6 +94,7 @@ const printStats = (args, stats) => {
     })
     table.total('Files')
 
+    console.log()
     console.log(table.toString())
   } catch (ex) {
     console.log(ex.stack)
@@ -120,11 +125,17 @@ const main = () => {
     if (args.help || !args.path) {
       return printUsage()
     }
-    const spinner = new Spinner('starting..  %s')
-    spinner.setSpinnerString('|/-\\')
+
+    const spinner = new Spinner('%s Starting..')
+    spinner.setSpinnerString(19)
     spinner.start()
     args.onProgress = (path, accumulator) => {
-      spinner.setSpinnerTitle(`scanning: ${truncateString(path, 60)}.. %s`)
+      spinner.setSpinnerTitle(`%s Scanning: ${truncateString(path, 60)}..`)
+    }
+    args.onError = (err) => {
+      spinner.stop(true)
+      console.log(err)
+      spinner.start()
     }
 
     scanner
@@ -138,7 +149,7 @@ const main = () => {
         console.log(ex.stack)
       })
   } catch (ex) {
-    console.log(ex.message)
+    console.log(ex.stack)
     printUsage()
   }
 }
