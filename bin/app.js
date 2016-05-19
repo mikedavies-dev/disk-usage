@@ -24,8 +24,8 @@ const programArgs = [
     description: 'Which field the results should be sorted by'
   },
   {
-    name: 'results',
-    alias: 'r',
+    name: 'count',
+    alias: 'c',
     type: Number,
     defaultValue: 15,
     description: 'Number of results to display'
@@ -36,6 +36,12 @@ const programArgs = [
     type: String,
     defaultOption: true,
     description: 'System path to start scanning'
+  },
+  {
+    name: 'reverse',
+    alias: 'r',
+    type: Boolean,
+    description: 'Reverse the results'
   },
   {
     name: 'help',
@@ -51,26 +57,36 @@ const padRight = (val, l, c) => {
 
 const cli = commandLineArgs(programArgs)
 
+const processResults = (args) => {
+  const process = R.compose(
+    R.take(args.count),
+    R.reverse,
+    R.sortBy(R.prop(args.sort)),
+    R.values
+  )
+
+  if (args.reverse) {
+    return R.compose(R.reverse, process)
+  } else {
+    return process
+  }
+}
+
 const printStats = (args, stats) => {
   try {
     const table = new Table()
 
-    const process = R.compose(
-      R.take(args.results),
-      R.reverse,
-      R.sortBy(R.prop(args.sort)),
-      R.values
-    )
+    const process = processResults(args)
 
     process(stats).forEach((stat) => {
       table.cell('Group', stat.group, (val) => padRight(val, 60))
       table.cell('Files', stat.files, (val) => Table.padLeft(val, 10))
-      table.cell('Size', stat.size, (val) => padRight(bytes(val), 10))
+      table.cell('Size', stat.size, (val) => Table.padLeft(bytes(val, { fixedDecimals: true }), 10))
       table.newRow()
     })
 
     table.total('Size', {
-      printer: (val) => padRight(bytes(val), 10)
+      printer: (val) => Table.padLeft(bytes(val, { fixedDecimals: true }), 10)
     })
     table.total('Files')
 
