@@ -2,9 +2,9 @@
 
 require('colors')
 
-const bytes = require('bytes')
 const commandLineArgs = require('command-line-args')
 const getUsage = require('command-line-usage')
+const numeral = require('numeral')
 const R = require('ramda')
 const scanner = require('../lib/index.js')
 const Spinner = require('cli-spinner').Spinner
@@ -101,6 +101,13 @@ const printStats = (args, stats) => {
       R.map(R.prop('group'))
     )
 
+    const formatLargeNumber = (num) => {
+      if (num < 9999) {
+        return num
+      }
+      return numeral(num).format('0.00a')
+    }
+
     const colLen = maxGroupLen(toDisplay)
 
     const table = new Table2({
@@ -122,10 +129,10 @@ const printStats = (args, stats) => {
     process(stats).forEach((stat) => {
       table.push([
         stat.group,
-        bytes(stat.size, { fixedDecimals: false }),
-        ((stat.size / totalSize) * 100).toFixed(2) + '%',
-        stat.files,
-        stat.directories
+        numeral(stat.size).format('0.00b'),
+        numeral(stat.size / totalSize).format('0.00%'),
+        formatLargeNumber(stat.files),
+        formatLargeNumber(stat.directories)
       ])
     })
 
@@ -133,10 +140,10 @@ const printStats = (args, stats) => {
     table.push([])
     table.push([
       '',
-      toBold(bytes(totalSize, { fixedDecimals: false })),
+      toBold(numeral(totalSize).format('0.00b')),
       toBold('100%'),
-      toBold(totalFiles),
-      toBold(totalDirs)
+      toBold(formatLargeNumber(totalFiles)),
+      toBold(formatLargeNumber(totalDirs))
     ])
 
     log()
