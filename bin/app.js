@@ -91,7 +91,7 @@ const printStats = (args, stats) => {
         '% Size'.bold.cyan,
         'Files'.bold.cyan
       ],
-      colWidths: [60, 10, 10, 10],
+      colWidths: [80, 10, 10, 10],
       colAligns: ['left', 'right', 'right', 'right'],
       style: {
         compact: true,
@@ -107,7 +107,7 @@ const printStats = (args, stats) => {
     process(stats).forEach((stat) => {
       table.push([
         stat.group,
-        bytes(stat.size, { fixedDecimals: true }),
+        bytes(stat.size, { fixedDecimals: false }),
         ((stat.size / totalSize) * 100).toFixed(2) + '%',
         stat.files
       ])
@@ -116,7 +116,7 @@ const printStats = (args, stats) => {
     table.push([])
     table.push([
       '',
-      bold(bytes(totalSize, { fixedDecimals: true })),
+      bold(bytes(totalSize, { fixedDecimals: false })),
       bold('100%'),
       bold(totalFiles)
     ])
