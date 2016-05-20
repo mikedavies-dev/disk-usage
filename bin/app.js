@@ -90,6 +90,7 @@ const printStats = (args, stats) => {
     const process = processResults(args)
     const totalFiles = total('files')(stats)
     const totalSize = total('size')(stats)
+    const totalDirs = total('directories')(stats)
     const toDisplay = process(stats)
 
     const maxGroupLen = R.compose(
@@ -107,10 +108,11 @@ const printStats = (args, stats) => {
         'Group'.bold.cyan,
         'Size'.bold.cyan,
         '% Size'.bold.cyan,
-        'Files'.bold.cyan
+        'Files'.bold.cyan,
+        'Dirs'.bold.cyan
       ],
-      colWidths: [colLen, 10, 10, 10],
-      colAligns: ['left', 'right', 'right', 'right'],
+      colWidths: [colLen, 10, 10, 10, 10],
+      colAligns: ['left', 'right', 'right', 'right', 'right'],
       style: {
         compact: true,
         'padding-left': 1
@@ -122,7 +124,8 @@ const printStats = (args, stats) => {
         stat.group,
         bytes(stat.size, { fixedDecimals: false }),
         ((stat.size / totalSize) * 100).toFixed(2) + '%',
-        stat.files
+        stat.files,
+        stat.directories
       ])
     })
 
@@ -132,7 +135,8 @@ const printStats = (args, stats) => {
       '',
       toBold(bytes(totalSize, { fixedDecimals: false })),
       toBold('100%'),
-      toBold(totalFiles)
+      toBold(totalFiles),
+      toBold(totalDirs)
     ])
 
     log()
