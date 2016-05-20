@@ -102,7 +102,6 @@ const printStats = (args, stats) => {
     )
 
     const formatLargeNumber = (num) => num < 9000 ? num : numeral(num).format('0.00a')
-
     const colLen = maxGroupLen(toDisplay)
 
     const table = new Table2({
@@ -193,13 +192,19 @@ const main = () => {
     spinner.setSpinnerString(19)
     spinner.start()
     args.onProgress = (path, accumulator) => {
-      spinner.setSpinnerTitle(`%s Scanning: ${truncateString(path, 60)}..`)
+      const cols = process.stdout.columns
+      spinner.setSpinnerTitle(`%s Scanning: ${truncateString(path, cols - 15)}`)
     }
     args.onError = (err) => {
       spinner.stop(true)
       log(err)
       spinner.start()
     }
+
+    process.stdout.on('resize', () => {
+      spinner.stop(true)
+      spinner.start()
+    })
 
     scanner
       .scan(args)
