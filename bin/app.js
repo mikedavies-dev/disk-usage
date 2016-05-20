@@ -101,12 +101,7 @@ const printStats = (args, stats) => {
       R.map(R.prop('group'))
     )
 
-    const formatLargeNumber = (num) => {
-      if (num < 9999) {
-        return num
-      }
-      return numeral(num).format('0.00a')
-    }
+    const formatLargeNumber = (num) => num < 9000 ? num : numeral(num).format('0.00a')
 
     const colLen = maxGroupLen(toDisplay)
 
