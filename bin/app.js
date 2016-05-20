@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
+require('colors')
+
 const bytes = require('bytes')
 const commandLineArgs = require('command-line-args')
 const getUsage = require('command-line-usage')
 const R = require('ramda')
 const scanner = require('../lib/index.js')
 const Spinner = require('cli-spinner').Spinner
-const Table = require('easy-table')
+const Table2 = require('cli-table')
 
 const programArgs = [
   {
@@ -51,14 +53,6 @@ const programArgs = [
   }
 ]
 
-const padRight = (val, l, c) => {
-  try {
-    return val + Array(l - val.length + 1).join(c || ' ')
-  } catch (ex) {
-    return val
-  }
-}
-
 const cli = commandLineArgs(programArgs)
 
 const processResults = (args) => {
@@ -77,25 +71,59 @@ const processResults = (args) => {
 }
 
 const printStats = (args, stats) => {
+  const total = (field) => {
+    return R.compose(
+      R.sum,
+      R.map(R.prop(field)),
+      R.values
+    )
+  }
+
+  const bold = (input) => {
+    return String(input).bold
+  }
+
   try {
-    const table = new Table()
+    var table = new Table2({
+      head: [
+        'Group'.bold.cyan,
+        'Size'.bold.cyan,
+        '% Size'.bold.cyan,
+        'Files'.bold.cyan
+      ],
+      colWidths: [60, 10, 10, 10],
+      colAligns: ['left', 'right', 'right', 'right'],
+      style: {
+        compact: true,
+        'padding-left': 1
+      }
+    })
 
     const process = processResults(args)
 
+    const totalFiles = total('files')(stats)
+    const totalSize = total('size')(stats)
+
     process(stats).forEach((stat) => {
-      table.cell('Group', stat.group, (val) => padRight(val, 60))
-      table.cell('Files', stat.files, (val) => Table.padLeft(val, 10))
-      table.cell('Size', stat.size, (val) => Table.padLeft(bytes(val, { fixedDecimals: true }), 10))
-      table.newRow()
+      table.push([
+        stat.group,
+        bytes(stat.size, { fixedDecimals: true }),
+        ((stat.size / totalSize) * 100).toFixed(2) + '%',
+        stat.files
+      ])
     })
 
-    table.total('Size', {
-      printer: (val) => Table.padLeft(bytes(val, { fixedDecimals: true }), 10)
-    })
-    table.total('Files')
+    table.push([])
+    table.push([
+      '',
+      bold(bytes(totalSize, { fixedDecimals: true })),
+      bold('100%'),
+      bold(totalFiles)
+    ])
 
     console.log()
     console.log(table.toString())
+    console.log()
   } catch (ex) {
     console.log(ex.stack)
   }
