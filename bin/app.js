@@ -55,6 +55,12 @@ const programArgs = [
 
 const cli = commandLineArgs(programArgs)
 
+const abort = (msg) => {
+  console.log(msg)
+  console.log()
+  process.exit(-1)
+}
+
 const processResults = (args) => {
   const process = R.compose(
     R.take(args.count),
@@ -77,10 +83,6 @@ const printStats = (args, stats) => {
       R.map(R.prop(field)),
       R.values
     )
-  }
-
-  const bold = (input) => {
-    return String(input).bold
   }
 
   try {
@@ -123,19 +125,20 @@ const printStats = (args, stats) => {
       ])
     })
 
+    const toBold = (input) => String(input).bold
     table.push([])
     table.push([
       '',
-      bold(bytes(totalSize, { fixedDecimals: false })),
-      bold('100%'),
-      bold(totalFiles)
+      toBold(bytes(totalSize, { fixedDecimals: false })),
+      toBold('100%'),
+      toBold(totalFiles)
     ])
 
     console.log()
     console.log(table.toString())
     console.log()
   } catch (ex) {
-    console.log(ex.stack)
+    abort(ex.stack)
   }
 }
 
@@ -167,8 +170,7 @@ const parseArgs = () => {
     scanner.validateArgs(args)
     return args
   } catch (ex) {
-    console.log(ex.message)
-    console.log()
+    abort(ex.message)
   }
   return null
 }
@@ -200,10 +202,10 @@ const main = () => {
       })
       .catch((ex) => {
         spinner.stop(true)
-        console.log(ex.stack)
+        abort(ex.stack)
       })
   } catch (ex) {
-    console.log(ex.stack)
+    abort(ex.stack)
   }
 }
 
