@@ -84,25 +84,35 @@ const printStats = (args, stats) => {
   }
 
   try {
-    var table = new Table2({
+    const process = processResults(args)
+    const totalFiles = total('files')(stats)
+    const totalSize = total('size')(stats)
+    const toDisplay = process(stats)
+
+    const maxGroupLen = R.compose(
+      R.min(80),
+      R.add(3),
+      R.reduce(R.max, 0),
+      R.map((l) => l.length),
+      R.map(R.prop('group'))
+    )
+
+    const colLen = maxGroupLen(toDisplay)
+
+    const table = new Table2({
       head: [
         'Group'.bold.cyan,
         'Size'.bold.cyan,
         '% Size'.bold.cyan,
         'Files'.bold.cyan
       ],
-      colWidths: [80, 10, 10, 10],
+      colWidths: [colLen, 10, 10, 10],
       colAligns: ['left', 'right', 'right', 'right'],
       style: {
         compact: true,
         'padding-left': 1
       }
     })
-
-    const process = processResults(args)
-
-    const totalFiles = total('files')(stats)
-    const totalSize = total('size')(stats)
 
     process(stats).forEach((stat) => {
       table.push([
