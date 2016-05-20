@@ -147,11 +147,27 @@ const printUsage = () => {
   console.log(getUsage(programArgs, options))
 }
 
-const main = () => {
+const parseArgs = () => {
   try {
     const args = cli.parse()
     if (args.help || !args.path) {
-      return printUsage()
+      printUsage()
+      return null
+    }
+    scanner.validateArgs(args)
+    return args
+  } catch (ex) {
+    console.log(ex.message)
+    console.log()
+  }
+  return null
+}
+
+const main = () => {
+  try {
+    const args = parseArgs()
+    if (!args) {
+      return
     }
 
     const spinner = new Spinner('%s Starting..')
@@ -178,7 +194,6 @@ const main = () => {
       })
   } catch (ex) {
     console.log(ex.stack)
-    printUsage()
   }
 }
 
