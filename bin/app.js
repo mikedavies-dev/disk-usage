@@ -54,10 +54,11 @@ const programArgs = [
 ]
 
 const cli = commandLineArgs(programArgs)
+const log = console.log
 
 const abort = (msg) => {
-  console.log(msg)
-  console.log()
+  log(msg)
+  log()
   process.exit(-1)
 }
 
@@ -134,9 +135,9 @@ const printStats = (args, stats) => {
       toBold(totalFiles)
     ])
 
-    console.log()
-    console.log(table.toString())
-    console.log()
+    log()
+    log(table.toString())
+    log()
   } catch (ex) {
     abort(ex.stack)
   }
@@ -157,7 +158,7 @@ const printUsage = () => {
       '$ dusk-usage [bold]{--help}'
     ]
   }
-  console.log(getUsage(programArgs, options))
+  log(getUsage(programArgs, options))
 }
 
 const parseArgs = () => {
@@ -190,7 +191,7 @@ const main = () => {
     }
     args.onError = (err) => {
       spinner.stop(true)
-      console.log(err)
+      log(err)
       spinner.start()
     }
 
