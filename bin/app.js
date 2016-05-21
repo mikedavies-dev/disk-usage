@@ -171,9 +171,11 @@ const printStats = (args, stats) => {
       toBold(formatLargeNumber(totalDirs))
     ])
 
-    log()
-    log(table.toString())
-    log()
+    if (toDisplay.length) {
+      log()
+      log(table.toString())
+      log()
+    }
   } catch (ex) {
     abort(ex.stack)
   }

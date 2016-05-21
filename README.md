@@ -49,6 +49,10 @@ $ disk-usage ~/Documents --sort files
 Group results by modified date
 ```bash
 $ disk-usage /lib --group modified
+
+Group results by extension
+```bash
+$ disk-usage /lib --group extension
 ```
 
 ![disk-usage screenshot 1](./screens/disk-usage-5.png)
