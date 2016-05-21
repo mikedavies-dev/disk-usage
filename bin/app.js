@@ -87,14 +87,22 @@ const printStats = (args, stats) => {
   }
 
   try {
+    const formatLargeNumber = (num) => num < 9999 ? num : numeral(num).format('0.00a')
+
     const getResults = processResults(args)
     const totalFiles = total('files')(stats)
     const totalSize = total('size')(stats)
     const totalDirs = total('directories')(stats)
     const toDisplay = getResults(stats)
 
-    const formatLargeNumber = (num) => num < 9999 ? num : numeral(num).format('0.00a')
-    const colLen = process.stdout.columns - (50)
+    const colWidths = [11, 9, 10, 10]
+    const colLen = (process.stdout.columns -
+      R.compose(
+        R.add(2),
+        R.add(colWidths.length),
+        R.sum
+      )(colWidths)
+    )
 
     const table = new Table2({
       head: [
@@ -104,11 +112,11 @@ const printStats = (args, stats) => {
         'files'.bold.cyan,
         'dirs'.bold.cyan
       ],
-      colWidths: [colLen, 11, 9, 10, 10],
+      colWidths: [colLen].concat(colWidths),
       colAligns: ['left', 'right', 'right', 'right', 'right'],
       style: {
         compact: true,
-        'padding-left': 1
+        'padding-left': 0
       }
     })
 
