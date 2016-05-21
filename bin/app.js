@@ -87,22 +87,14 @@ const printStats = (args, stats) => {
   }
 
   try {
-    const process = processResults(args)
+    const getResults = processResults(args)
     const totalFiles = total('files')(stats)
     const totalSize = total('size')(stats)
     const totalDirs = total('directories')(stats)
-    const toDisplay = process(stats)
+    const toDisplay = getResults(stats)
 
-    const maxGroupLen = R.compose(
-      R.min(80),
-      R.add(3),
-      R.reduce(R.max, 0),
-      R.map((l) => l.length),
-      R.map(R.prop('group'))
-    )
-
-    const formatLargeNumber = (num) => num < 9000 ? num : numeral(num).format('0.00a')
-    const colLen = maxGroupLen(toDisplay)
+    const formatLargeNumber = (num) => num < 9999 ? num : numeral(num).format('0.00a')
+    const colLen = process.stdout.columns - (45)
 
     const table = new Table2({
       head: [
@@ -112,7 +104,7 @@ const printStats = (args, stats) => {
         'Files'.bold.cyan,
         'Dirs'.bold.cyan
       ],
-      colWidths: [colLen, 10, 10, 10, 10],
+      colWidths: [colLen, 11, 9, 8, 8],
       colAligns: ['left', 'right', 'right', 'right', 'right'],
       style: {
         compact: true,
@@ -120,7 +112,7 @@ const printStats = (args, stats) => {
       }
     })
 
-    process(stats).forEach((stat) => {
+    toDisplay.forEach((stat) => {
       table.push([
         stat.group,
         numeral(stat.size).format('0.00b'),
