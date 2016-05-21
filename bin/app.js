@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
-require('colors')
-
+const colors = require('colors')
 const commandLineArgs = require('command-line-args')
 const getUsage = require('command-line-usage')
 const numeral = require('numeral')
@@ -120,9 +119,16 @@ const printStats = (args, stats) => {
       }
     })
 
+    const toRowText = (stat, text) => {
+      if (stat.isDirectory) {
+        return colors.blue.bold(text)
+      }
+      return text
+    }
+
     toDisplay.forEach((stat) => {
       table.push([
-        stat.group,
+        toRowText(stat, stat.group),
         numeral(stat.size).format('0.00b'),
         numeral(stat.size / totalSize).format('0.00%'),
         formatLargeNumber(stat.files),
