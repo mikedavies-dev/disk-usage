@@ -45,6 +45,18 @@ const programArgs = [
     description: 'Reverse the results'
   },
   {
+    name: 'show-files',
+    alias: 'f',
+    type: Boolean,
+    description: 'Only show files (hide directories)'
+  },
+  {
+    name: 'show-directories',
+    alias: 'd',
+    type: Boolean,
+    description: 'Only show directories (hide files)'
+  },
+  {
     name: 'help',
     alias: 'h',
     type: Boolean,
@@ -61,9 +73,22 @@ const abort = (msg) => {
   process.exit(-1)
 }
 
+const filterDirectoriesOrFiles = (args) => {
+  return (stat) => {
+    if (args['show-files']) {
+      return !stat.isDirectory
+    }
+    if (args['show-directories']) {
+      return stat.isDirectory
+    }
+    return true
+  }
+}
+
 const processResults = (args) => {
   const process = R.compose(
     R.take(args.count),
+    R.filter(filterDirectoriesOrFiles(args)),
     R.reverse,
     R.sortBy(R.prop(args.sort)),
     R.values
