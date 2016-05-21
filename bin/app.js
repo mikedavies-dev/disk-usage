@@ -122,7 +122,7 @@ const printStats = (args, stats) => {
     const colWidths = [11, 9, 10, 10]
     const colLen = (process.stdout.columns -
       R.compose(
-        R.add(2),
+        R.add(3),
         R.add(colWidths.length),
         R.sum
       )(colWidths)
