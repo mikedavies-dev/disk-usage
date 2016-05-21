@@ -94,17 +94,17 @@ const printStats = (args, stats) => {
     const toDisplay = getResults(stats)
 
     const formatLargeNumber = (num) => num < 9999 ? num : numeral(num).format('0.00a')
-    const colLen = process.stdout.columns - (45)
+    const colLen = process.stdout.columns - (50)
 
     const table = new Table2({
       head: [
-        'Group'.bold.cyan,
-        'Size'.bold.cyan,
-        '% Size'.bold.cyan,
-        'Files'.bold.cyan,
-        'Dirs'.bold.cyan
+        args.group.bold.cyan,
+        'size'.bold.cyan,
+        '% size'.bold.cyan,
+        'files'.bold.cyan,
+        'dirs'.bold.cyan
       ],
-      colWidths: [colLen, 11, 9, 8, 8],
+      colWidths: [colLen, 11, 9, 10, 10],
       colAligns: ['left', 'right', 'right', 'right', 'right'],
       style: {
         compact: true,
